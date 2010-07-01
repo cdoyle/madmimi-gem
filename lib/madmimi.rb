@@ -48,12 +48,19 @@ class MadMimi
   MAILER_PATH = '/mailer'
   MAILER_TO_LIST_PATH = '/mailer/to_list'
 
+  attr_accessor :verbose
+
   def initialize(username, api_key)
     @api_settings = { :username => username, :api_key => api_key }
+    self.verbose = false
   end
 
   def username
     @api_settings[:username]
+  end
+
+  def set_verbose(verbose)
+    self.verbose = verbose
   end
 
   def api_key
@@ -184,6 +191,9 @@ class MadMimi
           req.set_form_data(form_data)
           response = http.request(req)
           resp = response.body.strip
+	  if self.verbose
+	    puts "GET #{path}"
+	  end
         end
         resp
       rescue SocketError
@@ -203,7 +213,11 @@ class MadMimi
           req.set_form_data(form_data)
           response = http.request(req)
           resp = response.body.strip
+	  if self.verbose
+	    puts "POST #{path} with #{form_data.inspect.to_s}"
+	  end
         end
+	resp
       rescue SocketError
         raise "Host unreachable."
       end
